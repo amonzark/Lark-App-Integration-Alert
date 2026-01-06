@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 RUN go mod download
-RUN go build -o /katulampa-lark-app ./cmd
+RUN go build -o /lark-app ./cmd
 
 FROM alpine:latest
 
