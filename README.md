@@ -1,4 +1,4 @@
-# Katulampa Lark App
+# Lark App
 
 A minimalistic Go application designed to seamlessly integrate Alertmanager with Lark Messaging.
 
