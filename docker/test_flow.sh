@@ -3,7 +3,7 @@
 ALERTMANAGER_URL="http://localhost:9093/api/v2/alerts" #port forwarding alertmanager 
 ALERTMANAGER_URL2="http://localhost:9092/api/v2/alerts" #localhost alertmanager
 ALERT_NAME="TestAlertFromKatulampaLarkAppSelectionDuration"
-INSTANCE="katulampa-lark-app-test-selection-duration"
+INSTANCE="lark-app-test-selection-duration"
 SEVERITY="critical"
 
 ALERT_PAYLOAD=$(cat <<EOF
