@@ -1,0 +1,42 @@
+global:
+  resolve_timeout: 5m
+  slack_api_url: "https://katulampa-lark-app.staging.gopayapi.com/notify"
+
+route:
+  receiver: 'lark'
+
+receivers:
+  - name: 'lark'
+    slack_configs:
+      - channel: 'oc_f5e246a82f92b6850b2402a6eebabd40' # rayhan_test
+        send_resolved: true
+        color: '{{ template "lark.color" . }}'
+        title: '{{ template "lark.title" . }}'
+        text: '{{ template "lark.text" . }}'
+        short_fields: false
+        link_names: false
+        actions:
+        - type: button
+          text: Runbook
+          url: |-
+            {{if (index .Alerts 0).Annotations.playbook}}
+                {{ (index .Alerts 0).Annotations.playbook }}
+            {{- else -}}
+                {{ (index .Alerts 0).Annotations.runbook_url }}
+            {{- end -}}
+        - type: button
+          text: Query
+          url: https://katulampa.golabs.io/explore
+        - type: button
+          text: Dashboard
+          url: '{{ (index .Alerts 0).Annotations.dashboard | reReplaceAll "lens" "katulampa"
+            }}'
+        - type: button
+          text: Debug
+          url: |-
+            {{if and (and ((index .Alerts 0).Labels.release) ((index .Alerts 0).Labels.cluster_name)) ((index .Alerts 0).Labels.env)}}
+              https://katulampa.golabs.io/d/d605eafc-35ac-4afd-a422-983963e2ff56/one-observability-dashboard?var-service={{ (index .Alerts 0).Labels.release }}&var-cluster_name={{ (index .Alerts 0).Labels.cluster_name }}&var-env={{ (index .Alerts 0).Labels.env }}
+            {{- end -}}
+
+templates:
+  - /etc/alertmanager/*.tmpl

@@ -1,0 +1,111 @@
+{{define "lark.color" -}}
+    {{if eq .Status "firing" -}}
+        {{if eq .CommonLabels.severity "warning" -}}
+            yellow
+        {{- else if eq .CommonLabels.severity "critical" -}}
+            red
+        {{- else -}}
+            blue
+        {{- end -}}
+    {{else -}}
+    green
+    {{- end}}
+{{- end}}
+
+{{/* First line of Lark alerts */}}
+{{- define "lark.title" -}}
+    [{{- .Status | toUpper -}}
+    {{if eq .Status "firing"}}:{{.Alerts.Firing | len}}{{- end -}}
+    ] {{.CommonLabels.alertname}}
+{{- end -}}
+
+{{- define "lark.titlelink" -}}
+    https://katulampa.golabs.io/explore?orgId=1&left=%5B%22now-2d%22,%22now%22,%22alertmanager%22,%7B%22receiver%22:%22{{.Receiver}}%22,%22filters%22:%22alertname%3D%5C%22{{.CommonLabels.alertname}}%5C%22%22,%22active%22:true%7D%5D
+{{- end -}}
+
+{{/* The text to display in the alert */}}
+{{define "lark.text"}}
+    {{- range .Alerts }}
+        {{- if .Annotations.summary }}
+            {{- .Annotations.summary -}}
+        {{ end -}}
+        {{- if .Annotations.message }}
+            {{- "\n" -}} {{ .Annotations.message -}}
+        {{ end -}}
+        {{- if .Annotations.description }}
+            {{- "\n" -}} {{ .Annotations.description -}}
+        {{ end -}}
+        {{- if .Labels.severity }}
+            {{- "\n" -}} severity: {{ .Labels.severity -}}
+        {{ end -}}
+        {{- if .Labels.cluster_name }}
+            {{- "\n" -}} from_cluster: {{ .Labels.cluster_name -}}
+        {{ end -}}
+        {{- if .Labels.environment }}
+            {{- "\n" -}} environment: {{ .Labels.environment -}}
+        {{ else }}
+            {{- "\n" -}} environment: {{ .Labels.env -}}
+        {{ end -}}
+        {{- if .Labels.app_type }}
+            {{- "\n" -}} app_type: {{ .Labels.app_type -}}
+        {{ end -}}
+        {{- if .Labels.stream }}
+            {{- "\n" -}} stream: {{ .Labels.stream -}}
+        {{ end -}}
+        {{- if .Labels.namespace }}
+            {{- "\n" -}} namespace: {{ .Labels.namespace -}}
+        {{ end -}}
+        {{- "\n" -}}
+    {{end}}
+{{- end}}
+
+{{define "slack.default.callbackid"}}
+    {{- range .Alerts }}{{ .Fingerprint }},{{ end }}
+{{- end}}
+
+{{/* The text to display in the gopaysh alert */}}
+{{define "gopaysh_alert_lark.text"}}
+    {{- range .Alerts }}
+        {{- if .Labels.addon_name }}
+            {{- "\n" -}} *addon_name*: {{ .Labels.addon_name -}}
+        {{ end -}}
+        {{- if .Labels.error_reason }}
+            {{- "\n" -}} *error_reason*: {{ .Labels.error_reason -}}
+        {{ end -}}
+        {{- if .Labels.release }}
+            {{- "\n" -}} *release_name*: {{ .Labels.release -}}
+        {{ end -}}
+        {{- if .Labels.cluster }}
+            {{- "\n" -}} *from_cluster*: {{ .Labels.cluster -}}
+        {{ end -}}
+        {{- if .Labels.environment }}
+            {{- "\n" -}} *environment*: {{ .Labels.environment -}}
+        {{ else }}
+            {{- "\n" -}} *environment*: {{ .Labels.env -}}
+        {{ end -}}
+        {{- if .Labels.stream }}
+            {{- "\n" -}} *stream*: {{ .Labels.stream -}}
+        {{ end -}}
+        {{- "\n" -}}
+    {{end}}
+{{- end}}
+
+{{/* The text to display in the gopaysh alert */}}
+{{define "scheduler_unprocessed_jobs_alert_lark.text"}}
+    {{- range .Alerts }}
+        {{- if .Labels.job_trigger_date }}
+            {{- "\n" -}} *job_trigger_date*: {{ .Labels.job_trigger_date -}}
+        {{ end -}}
+        {{- if .Labels.group_key }}
+            {{- "\n" -}} *group_key*: {{ .Labels.group_key -}}
+        {{ end -}}
+        {{- if .Labels.count }}
+            {{- "\n" -}} *total_unprocessed_jobs*: {{ .Labels.count -}}
+        {{ end -}}
+        {{- "\n" -}}
+    {{end}}
+{{- end}}
+
+{{define "gopaysh_alert_lark.default.callbackid"}}
+    {{- range .Alerts }}{{ .Fingerprint }},{{ end }}
+{{- end}}
